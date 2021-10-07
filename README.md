@@ -2,22 +2,22 @@
 
 <h2>Installation:</h2>
 
-<h3>Create the enviroment</h3>
+<h3>Create the enviroment:</h3>
 conda create -n pws python=3.9
 
-<h3>Install dependencies</h3>
-pip install selenium
-pip install chromedriver_autoinstaller
-pip install wget
-pip install opencv-python
+<h3>Install dependencies:</h3>
+<p>pip install selenium</p>
+<p>pip install chromedriver_autoinstaller</p>
+<p>pip install wget</p>
+<p>pip install opencv-python</p>
 
-or run:
+<p>or run:</p>
 
-pip install -r requeriments.txt
+<p>pip install -r requeriments.txt</p>
 
 <h3>Execute:</h3>
-python main.py --email "your email" --password "your password" --link "pinterest link"
+<p>python main.py --email "your email" --password "your password" --link "pinterest link"</p>
 
-or
+<p>or</p>
 
-python main.py --email "your email" --password "your password" --list "txt file with a list of pinterest links"
+<p>python main.py --email "your email" --password "your password" --list "txt file with a list of pinterest links"</p>
