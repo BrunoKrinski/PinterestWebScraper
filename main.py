@@ -2,6 +2,9 @@ import os
 import cv2
 import time
 import wget
+import psutil
+import random
+import string
 import platform
 import argparse
 import subprocess
@@ -36,7 +39,7 @@ if __name__ == '__main__':
         links = [args.link]
         
     chromedriver_autoinstaller.install()
-    
+        
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     driver = webdriver.Chrome(options=options)
@@ -61,11 +64,18 @@ if __name__ == '__main__':
     enterButton = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, enterPath))).click()
     time.sleep(15)
     
-    log_file = open('log.txt','w')
-
+    max_images = 150000
+    log_file = open('log.txt', 'w')
     for i, link in enumerate(links):
-        images_path = images_folder + str(i).zfill(6)
+        print('\nLink: {}'.format(link))
+        log_file.write('Link: {}\n'.format(link))
+
+        letters = string.ascii_letters
+        images_path = images_folder + ''.join(random.choice(letters) for i in range(10))
         os.mkdir(images_path)
+
+        print('Path: {}'.format(images_path))
+        log_file.write('Path: {}\n'.format(images_path))
     
         try:
             driver.get(link)
@@ -75,6 +85,7 @@ if __name__ == '__main__':
         time.sleep(5)
 
         urls = []
+        num_images = 0
         scroll_times = 0
         last_height = driver.execute_script("return document.body.scrollHeight")
         while True:
@@ -92,8 +103,9 @@ if __name__ == '__main__':
             driver.execute_script("window.scrollBy(0, 50);")
             scroll_times += 1
             
-            if scroll_times == 100:
+            if scroll_times == 50:
                 urls = list(set(urls))
+                num_images += len(urls)
                 for url in urls:
                     try:
                         wget.download(url, out=images_path)
@@ -109,13 +121,16 @@ if __name__ == '__main__':
                 if platform.system() == 'Windows':
                     subprocess.run(["powershell", "-Command", "Get-ChildItem -recurse -Path images | Where-Object {$_.Name -match '\(1\)'} | Remove-Item"])
                 elif platform.system() == 'Linux':
-                    os.system("rm *\(1\)*")
+                    os.system("rm {}/*\(1\)* 2> /dev/null".format(images_path))
                 
                 urls = []
                 new_height = driver.execute_script("return document.body.scrollHeight")
-                if new_height == last_height:
+
+                mem = psutil.virtual_memory()
+                if new_height == last_height or num_images > max_images or mem.percent > 95:
                     break
                 else:
                     last_height = new_height
                     scroll_times = 0
                     driver.execute_script("window.scrollBy(0, 50);")
+    log_file.close()

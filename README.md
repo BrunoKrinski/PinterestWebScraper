@@ -9,7 +9,8 @@ conda create -n pws python=3.9
 <p>pip install selenium<br>
 pip install chromedriver_autoinstaller<br>
 pip install wget<br>
-pip install opencv-python</p>
+pip install opencv-python
+pip install psutil</p>
 
 <p>or run:</p>
 
